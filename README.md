@@ -1,11 +1,13 @@
 # Image Edit API
 
-This API provides an endpoint to edit images using OpenAI's image editing API, specifically optimized for house exterior painting visualization.
+This API provides endpoints for AI-powered home design, including exterior painting and interior design visualization using OpenAI's image editing API.
 
 ## Features
+- Exterior house painting visualization
+- Interior room design visualization
 - Automatic PNG conversion with alpha channel support
 - Cross-origin resource sharing (CORS) enabled
-- Intelligent AI home painter prompt system
+- Intelligent AI design prompt system
 - Error handling and validation
 
 ## Setup
@@ -36,7 +38,7 @@ npm run dev
 
 ## API Usage
 
-### Edit Image Endpoint
+### 1. Exterior Painting Endpoint
 
 **POST** `/api/edit-image`
 
@@ -44,25 +46,40 @@ npm run dev
 
 ```json
 {
-  "image_url": "https://your-s3-bucket.amazonaws.com/house-image.png",
+  "image_url": "https://your-s3-bucket.amazonaws.com/house-exterior.png",
   "preferences": "Paint this house in a modern style using earth tones for the main exterior and white for the trim"
 }
 ```
 
-#### Parameters:
-
-- `image_url` (required): URL of the house image to edit (any common image format supported)
-- `preferences` (required): Instructions for how you want the house painted
-
-**Example Preferences:**
+**Example Exterior Preferences:**
 
 - "Paint this house in a modern style using earth tones for the main exterior and white for the trim"
 - "Repaint the exterior in bright red with black accents for a bold look"
 - "Transform this house using Mediterranean colors with a terracotta roof and cream walls"
-- "Apply a coastal color scheme with light blue siding and crisp white trim"
-- "Update the exterior with sage green siding and cream colored trim for a natural look"
 
-**Response:**
+### 2. Interior Design Endpoint
+
+**POST** `/api/interior-design`
+
+**Request Body:**
+
+```json
+{
+    "image_url": "https://your-s3-bucket.amazonaws.com/room-interior.png",
+    "preferences": "Transform this space into a modern minimalist living room with neutral tones and natural textures"
+}
+```
+
+**Example Interior Preferences:**
+
+- "Transform this space into a modern minimalist living room with neutral tones and natural textures"
+- "Redesign this room in a cozy bohemian style with warm colors and layered textiles"
+- "Convert this space to a contemporary office with clean lines and professional atmosphere"
+- "Create a luxurious master bedroom with rich textures and a calming color palette"
+
+### Response Format (for both endpoints)
+
+**Success Response:**
 
 ```json
 {
@@ -70,10 +87,10 @@ npm run dev
     "background": "opaque",
     "data": [
         {
-            "b64_json":"base64 code",
+            "b64_json": "base64 code"
         }
-    ]
-     "output_format": "png",
+    ],
+    "output_format": "png",
     "quality": "high",
     "size": "1024x1024",
     "usage": {
@@ -92,8 +109,8 @@ npm run dev
 
 ```json
 {
-  "error": "Error processing image edit request",
-  "details": "Detailed error information"
+    "error": "Error processing design request",
+    "details": "Detailed error information"
 }
 ```
 
@@ -124,7 +141,8 @@ The API allows:
 - Any common image format is accepted (will be converted to PNG)
 - The API uses OpenAI's image editing endpoint
 - Make sure your OpenAI API key has access to the image editing feature
-- The AI acts as an intelligent home painter that understands architectural integrity
+- The AI system includes specialized prompts for both exterior and interior design
+- Both endpoints maintain architectural integrity and spatial relationships
 
 ## Development
 - The project includes a `.gitignore` file for Node.js development
