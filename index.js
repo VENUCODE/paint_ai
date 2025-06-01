@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const FormData = require('form-data');
-const sharp = require('sharp'); // Added sharp for image conversion
+const sharp = require('sharp');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,6 +11,7 @@ const port = process.env.PORT || 3000;
 // Base prompt templates
 const EXTERIOR_PROMPT = "You are an intelligent AI home painter. {preferences} .Make sure to maintain the architectural integrity while creating a professional and aesthetically pleasing result.";
 const INTERIOR_PROMPT = "You are an expert AI interior designer. {preferences} .Ensure the design maintains proper spatial relationships, lighting, and architectural elements while creating a cohesive and sophisticated interior space.";
+const NATURE_INSPIRED_PROMPT = "Transform the natural elements, patterns, and essence of this image into a stunning piece of architecture. Create a hyper-realistic building that harmoniously integrates the organic forms, textures, and colors from the natural scene. The building should appear as if it emerged from the same natural principles - incorporating flowing lines, natural materials, and biophilic design elements. Include human elements to show scale and bring life to the scene. Ensure dramatic lighting, atmospheric depth, and photorealistic materials that echo the natural inspiration while creating a sophisticated, modern architectural statement.";
 
 app.use(cors({
     origin: '*',//allow all origins
@@ -56,6 +57,7 @@ async function processImageAndCallAPI(imageUrl, prompt) {
 
     return openaiResponse.data;
 }
+
 
 // Exterior painting endpoint
 app.post('/api/edit-image', async (req, res) => {
@@ -108,6 +110,32 @@ app.post('/api/interior-design', async (req, res) => {
 
         res.status(error.response?.status || 500).json({
             error: 'Error processing interior design request',
+            details: error.response?.data || error.message
+        });
+    }
+});
+
+// Nature-inspired architectural visualization endpoint
+app.post('/api/nature-inspired', async (req, res) => {
+    try {
+        const { image_url } = req.body;
+
+        if (!image_url) {
+            return res.status(400).json({ error: 'image_url is required' });
+        }
+
+        console.log('Processing nature-inspired architectural generation...');
+        const result = await processImageAndCallAPI(image_url, NATURE_INSPIRED_PROMPT);
+        res.json(result);
+    } catch (error) {
+        console.error('Error details:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status
+        });
+
+        res.status(error.response?.status || 500).json({
+            error: 'Error processing nature-inspired architectural visualization request',
             details: error.response?.data || error.message
         });
     }
