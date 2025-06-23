@@ -21,7 +21,7 @@ app.use(cors({
 app.use(express.json());
 
 // Helper function for image processing and API call
-async function processImageAndCallAPI(imageUrl, prompt) {
+async function processImageAndCallAPI(imageUrl, prompt, apiKey) {
     // Download the image
     const imageResponse = await axios.get(imageUrl, {
         responseType: 'arraybuffer'
@@ -50,7 +50,7 @@ async function processImageAndCallAPI(imageUrl, prompt) {
         {
             headers: {
                 ...formData.getHeaders(),
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+                'Authorization': `Bearer ${apiKey}`
             }
         }
     );
@@ -58,11 +58,11 @@ async function processImageAndCallAPI(imageUrl, prompt) {
     return openaiResponse.data;
 }
 
-
 // Exterior painting endpoint
 app.post('/api/edit-image', async (req, res) => {
     try {
         const { preferences, image_url } = req.body;
+        const apiKey = req.headers.authorization;
 
         if (!image_url || !preferences) {
             return res.status(400).json({ error: 'image_url and preferences are required' });
@@ -71,7 +71,7 @@ app.post('/api/edit-image', async (req, res) => {
         const finalPrompt = EXTERIOR_PROMPT.replace('{preferences}', preferences);
         console.log('Generated exterior prompt:', finalPrompt);
 
-        const result = await processImageAndCallAPI(image_url, finalPrompt);
+        const result = await processImageAndCallAPI(image_url, finalPrompt, apiKey);
         res.json(result);
     } catch (error) {
         console.error('Error details:', {
@@ -91,6 +91,7 @@ app.post('/api/edit-image', async (req, res) => {
 app.post('/api/interior-design', async (req, res) => {
     try {
         const { preferences, image_url } = req.body;
+        const apiKey = req.headers.authorization;
 
         if (!image_url || !preferences) {
             return res.status(400).json({ error: 'image_url and preferences are required' });
@@ -99,7 +100,7 @@ app.post('/api/interior-design', async (req, res) => {
         const finalPrompt = INTERIOR_PROMPT.replace('{preferences}', preferences);
         console.log('Generated interior prompt:', finalPrompt);
 
-        const result = await processImageAndCallAPI(image_url, finalPrompt);
+        const result = await processImageAndCallAPI(image_url, finalPrompt, apiKey);
         res.json(result);
     } catch (error) {
         console.error('Error details:', {
@@ -119,13 +120,12 @@ app.post('/api/interior-design', async (req, res) => {
 app.post('/api/nature-inspired', async (req, res) => {
     try {
         const { image_url } = req.body;
-
+        const apiKey = req.headers.authorization;
         if (!image_url) {
             return res.status(400).json({ error: 'image_url is required' });
         }
-
         console.log('Processing nature-inspired architectural generation...');
-        const result = await processImageAndCallAPI(image_url, NATURE_INSPIRED_PROMPT);
+        const result = await processImageAndCallAPI(image_url, NATURE_INSPIRED_PROMPT, apiKey);
         res.json(result);
     } catch (error) {
         console.error('Error details:', {
